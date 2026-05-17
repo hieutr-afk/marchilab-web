@@ -6,6 +6,22 @@ media_folder: "images"
 public_folder: "images"
 
 collections:
+  - name: "settings"
+    label: "Cài Đặt Giao Diện"
+    delete: false # Không cho phép xóa file cấu hình này
+    editor:
+      preview: false
+    files:
+      - name: "general"
+        label: "Cài đặt chung"
+        file: "content/settings.yml"
+        fields:
+          - {label: "Slogan Chính", name: "hero_title", widget: "string"}
+          - {label: "Đoạn Giới Thiệu Ngắn", name: "hero_subtitle", widget: "text"}
+          - {label: "Ảnh Nền Hero (Chạy dưới chữ)", name: "hero_bg", widget: "image"}
+          - {label: "Màu Chủ Đạo (Dạng mã # ví dụ #38bdf8)", name: "accent_color", widget: "string"}
+          - {label: "Màu Nền Trang Web (Dạng mã # ví dụ #0f172a)", name: "bg_color", widget: "string"}
+
   - name: "projects"
     label: "Dự Án Của Tôi"
     folder: "content/projects"
