@@ -71,26 +71,41 @@
     <script>
       const GITHUB_REPO = "hieutr-afk/marchilab-web"; 
 
+      // Hàm bóc tách nội dung từ file .md
+      function parseFrontmatter(text) {
+          const lines = text.split('---');
+          if (lines.length > 2) {
+              try {
+                  return jsyaml.load(lines[1]);
+              } catch (e) {
+                  return null;
+              }
+          }
+          return null;
+      }
+
       async function initSite() {
           try {
-              // 1. Lấy cấu hình giao diện
-              const resSettings = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/content/settings.yml`);
+              // 1. Đồng bộ đọc cấu hình giao diện từ file .md do Admin tạo ra
+              const resSettings = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/content/settings.md`);
               if(resSettings.ok) {
                   const dataSettings = await resSettings.json();
-                  const yamlText = atob(dataSettings.content);
-                  const config = jsyaml.load(yamlText);
+                  const rawText = atob(dataSettings.content);
+                  const config = parseFrontmatter(rawText);
                   
-                  if(config.hero_title) document.getElementById('hero-title').innerHTML = config.hero_title;
-                  if(config.hero_subtitle) document.getElementById('hero-subtitle').innerText = config.hero_subtitle;
-                  if(config.accent_color) document.documentElement.style.setProperty('--accent-color', config.accent_color);
-                  if(config.bg_color) document.documentElement.style.setProperty('--bg-color', config.bg_color);
-                  if(config.hero_bg) {
-                      let bg = config.hero_bg;
-                      if(bg.startsWith('/')) bg = bg.substring(1);
-                      document.getElementById('hero-bg-img').style.backgroundImage = `url('${bg}')`;
+                  if(config) {
+                      if(config.hero_title) document.getElementById('hero-title').innerHTML = config.hero_title;
+                      if(config.hero_subtitle) document.getElementById('hero-subtitle').innerText = config.hero_subtitle;
+                      if(config.accent_color) document.documentElement.style.setProperty('--accent-color', config.accent_color);
+                      if(config.bg_color) document.documentElement.style.setProperty('--bg-color', config.bg_color);
+                      if(config.hero_bg) {
+                          let bg = config.hero_bg;
+                          if(bg.startsWith('/')) bg = bg.substring(1);
+                          document.getElementById('hero-bg-img').style.backgroundImage = `url('${bg}')`;
+                      }
                   }
               }
-              // 2. Lấy dữ liệu bài viết
+              // 2. Tải dữ liệu các bài viết dự án khác
               renderData();
           } catch(e) { console.error(e); }
       }
@@ -105,11 +120,8 @@
                   if (file.name.endsWith('.md')) {
                       const res = await fetch(file.download_url);
                       const text = await res.text();
-                      const lines = text.split('---');
-                      if (lines.length > 2) {
-                          const data = jsyaml.load(lines[1]);
-                          items.push(data);
-                      }
+                      const config = parseFrontmatter(text);
+                      if(config) items.push(config);
                   }
               }
               return items;
