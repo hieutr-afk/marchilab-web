@@ -24,6 +24,7 @@ collections:
           - {label: "--- ĐỔI TÊN CÁC ĐẦU MỤC ---", name: "divider", widget: "hidden", required: false}
           - {label: "Tên mục Dự Án", name: "title_projects", widget: "string", default: "Dự Án Của Tôi", required: false}
           - {label: "Tên mục Nghiên Cứu", name: "title_research", widget: "string", default: "Đề Tài Nghiên Cứu", required: false}
+          - {label: "Tên mục Đồ Án", name: "title_assignments", widget: "string", default: "Hồ Sơ Đồ Án", required: false}
           - {label: "Tên mục Ý Tưởng", name: "title_ideas", widget: "string", default: "Góc Ý Tưởng", required: false}
           - {label: "Tên mục Liên Kết", name: "title_links", widget: "string", default: "Xuất Bản & Liên Kết Ngoài", required: false}
 
@@ -49,8 +50,20 @@ collections:
       - {label: "Tóm Tắt (Abstract)", name: "summary", widget: "text"}
       - {label: "File Tài Liệu (PDF)", name: "file", widget: "file"}
 
+  - name: "assignments"
+    label: "Mục 3: Đồ Án"
+    folder: "content/assignments"
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - {label: "Tên Đồ Án", name: "title", widget: "string"}
+      - {label: "Phân Loại Đồ Án", name: "category", widget: "select", options: ["Đồ án tổng hợp", "Đồ án tốt nghiệp"]}
+      - {label: "Ảnh Đại Diện Đồ Án", name: "image", widget: "image"}
+      - {label: "Mô Tả / Nội Dung Đồ Án", name: "description", widget: "text"}
+      - {label: "File Đồ Án (PDF)", name: "file", widget: "file", required: false}
+
   - name: "ideas"
-    label: "Mục 3: Ý Tưởng (Mới)"
+    label: "Mục 4: Ý Tưởng"
     folder: "content/ideas"
     create: true
     slug: "{{slug}}"
@@ -59,11 +72,4 @@ collections:
       - {label: "Ảnh Minh Họa", name: "image", widget: "image", required: false}
       - {label: "Nội Dung Chi Tiết", name: "description", widget: "text"}
 
-  - name: "links"
-    label: "Mục 4: Liên Kết"
-    folder: "content/links"
-    create: true
-    slug: "{{slug}}"
-    fields:
-      - {label: "Tên Trang Web", name: "title", widget: "string"}
-      - {label: "Đường Dẫn URL", name: "url", widget: "string"}
+  - name: "links
