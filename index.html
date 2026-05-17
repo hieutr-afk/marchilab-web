@@ -71,6 +71,7 @@
     <script>
       const GITHUB_REPO = "hieutr-afk/marchilab-web"; 
 
+      // Hàm giải mã nội dung Markdown cho các bài viết riêng lẻ
       function parseFrontmatter(text) {
           const lines = text.split('---');
           if (lines.length > 2) {
@@ -86,13 +87,14 @@
 
       async function initSite() {
           try {
-              // Thêm mã ngẫu nhiên để ép trình duyệt xóa cache dữ liệu cũ
               const cacheBuster = `?t=${new Date().getTime()}`;
-              const resSettings = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/content/settings.md${cacheBuster}`);
+              // ĐỌC TRỰC TIẾP FILE settings.yml do Admin của bạn sinh ra
+              const resSettings = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/content/settings.yml${cacheBuster}`);
               if(resSettings.ok) {
                   const dataSettings = await resSettings.json();
                   const rawText = atob(dataSettings.content);
-                  const config = parseFrontmatter(rawText);
+                  // Chuyển trực tiếp chuỗi YAML thành Object dữ liệu
+                  const config = jsyaml.load(rawText);
                   
                   if(config) {
                       if(config.hero_title) document.getElementById('hero-title').innerHTML = config.hero_title;
