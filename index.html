@@ -6,10 +6,7 @@
     <title>Marchi Lab | Studio & Research Hub</title>
     <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
     <style>
-        :root {
-            --accent-color: #38bdf8;
-            --bg-color: #0f172a;
-        }
+        :root { --accent-color: #38bdf8; --bg-color: #0f172a; }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; scroll-behavior: smooth; }
         body { background-color: var(--bg-color); color: #f8fafc; line-height: 1.6; overflow-x: hidden; }
         a { color: inherit; text-decoration: none; transition: all 0.3s ease; }
@@ -51,7 +48,20 @@
     </style>
 </head>
 <body>
-    <header><div class="container nav-container"><div class="logo">MARCHI LAB</div><nav><ul><li><a href="#home">Trang Chủ</a></li><li><a href="#projects">Dự Án</a></li><li><a href="#research">Nghiên Cứu</a></li><li><a href="#links">Liên Kết</a></li></ul></nav></div></header>
+    <header>
+        <div class="container nav-container">
+            <div class="logo">MARCHI LAB</div>
+            <nav>
+                <ul>
+                    <li><a href="#home">Trang Chủ</a></li>
+                    <li><a href="#projects" id="nav-projects">Dự Án</a></li>
+                    <li><a href="#research" id="nav-research">Nghiên Cứu</a></li>
+                    <li><a href="#ideas" id="nav-ideas">Ý Tưởng</a></li>
+                    <li><a href="#links" id="nav-links">Liên Kết</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
 
     <section id="home" class="hero">
         <div class="hero-bg" id="hero-bg-img"></div>
@@ -62,23 +72,28 @@
         </div>
     </section>
 
-    <section id="projects"><div class="container"><h2 class="section-title">Dự Án Của Tôi</h2><div class="project-grid" id="project-list"></div></div></section>
-    <section id="research"><div class="container"><h2 class="section-title">Đề Tài Nghiên Cứu</h2><h3 class="sub-title">Nghiên cứu của tôi</h3><div id="my-research"></div><h3 class="sub-title">Đề tài nghiên cứu hay (Sưu tầm)</h3><div id="other-research"></div></div></section>
-    <section id="links"><div class="container"><h2 class="section-title">Xuất Bản & Liên Kết Ngoài</h2><div class="link-grid" id="external-links"></div></div></section>
+    <section id="projects"><div class="container"><h2 class="section-title" id="title-projects">Dự Án Của Tôi</h2><div class="project-grid" id="project-list"></div></div></section>
+    
+    <section id="research"><div class="container"><h2 class="section-title" id="title-research">Đề Tài Nghiên Cứu</h2>
+        <h3 class="sub-title">Nghiên cứu của tôi</h3><div id="my-research"></div>
+        <h3 class="sub-title">Đề tài nghiên cứu hay (Sưu tầm)</h3><div id="other-research"></div>
+    </div></section>
+
+    <section id="ideas"><div class="container"><h2 class="section-title" id="title-ideas">Góc Ý Tưởng</h2><div class="project-grid" id="ideas-list"></div></div></section>
+
+    <section id="links"><div class="container"><h2 class="section-title" id="title-links">Xuất Bản & Liên Kết Ngoài</h2><div class="link-grid" id="external-links"></div></div></section>
+    
     <footer><div class="container"><p>&copy; 2026 Marchi Lab. Bản quyền thuộc về Hiếu Trần.</p></div></footer>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/js-yaml/4.1.0/js-yaml.min.js"></script>
     <script>
       const GITHUB_REPO = "hieutr-afk/marchilab-web"; 
 
-      // Ép giải mã chuỗi nhị phân (Base64) từ GitHub sang đúng chuẩn chữ UTF-8 của Việt Nam
       function decodeBase64ToUTF8(base64Str) {
           const binaryStr = atob(base64Str.replace(/\s/g, ''));
           const len = binaryStr.length;
           const bytes = new Uint8Array(len);
-          for (let i = 0; i < len; i++) {
-              bytes[i] = binaryStr.charCodeAt(i);
-          }
+          for (let i = 0; i < len; i++) bytes[i] = binaryStr.charCodeAt(i);
           return new TextDecoder('utf-8').decode(bytes);
       }
 
@@ -89,12 +104,10 @@
               const parts = text.split('---');
               cleanText = parts.length > 2 ? parts[1] : parts[0];
           }
-          try {
-              return jsyaml.load(cleanText);
-          } catch (e) {
+          try { return jsyaml.load(cleanText); } 
+          catch (e) {
               const obj = {};
-              const lines = cleanText.split('\n');
-              lines.forEach(line => {
+              cleanText.split('\n').forEach(line => {
                   const match = line.match(/^([^:]+):\s*["']?([^"']+)["']?\s*$/);
                   if (match) obj[match[1].trim()] = match[2].trim();
               });
@@ -102,10 +115,7 @@
           }
       }
 
-      function cleanPath(p) {
-          if (!p) return '';
-          return p.startsWith('/') ? p.substring(1) : p;
-      }
+      function cleanPath(p) { return (!p) ? '' : (p.startsWith('/') ? p.substring(1) : p); }
 
       async function initSite() {
           try {
@@ -113,18 +123,22 @@
               const resSettings = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/content/settings.yml${cacheBuster}`);
               if(resSettings.ok) {
                   const dataSettings = await resSettings.json();
-                  // SỬA LỖI: Gọi hàm giải mã UTF-8 chuyên dụng thay vì dùng atob mặc định
                   const rawText = decodeBase64ToUTF8(dataSettings.content);
                   const config = universalParseYAML(rawText);
                   
                   if(config) {
+                      // Đổi giao diện
                       if(config.hero_title) document.getElementById('hero-title').innerHTML = config.hero_title;
                       if(config.hero_subtitle) document.getElementById('hero-subtitle').innerText = config.hero_subtitle;
                       if(config.accent_color) document.documentElement.style.setProperty('--accent-color', config.accent_color);
                       if(config.bg_color) document.documentElement.style.setProperty('--bg-color', config.bg_color);
-                      if(config.hero_bg) {
-                          document.getElementById('hero-bg-img').style.backgroundImage = `url('${cleanPath(config.hero_bg)}')`;
-                      }
+                      if(config.hero_bg) document.getElementById('hero-bg-img').style.backgroundImage = `url('${cleanPath(config.hero_bg)}')`;
+                      
+                      // Đổi tiêu đề các đầu mục
+                      if(config.title_projects) { document.getElementById('title-projects').innerText = config.title_projects; document.getElementById('nav-projects').innerText = config.title_projects; }
+                      if(config.title_research) { document.getElementById('title-research').innerText = config.title_research; document.getElementById('nav-research').innerText = config.title_research; }
+                      if(config.title_ideas) { document.getElementById('title-ideas').innerText = config.title_ideas; document.getElementById('nav-ideas').innerText = config.title_ideas; }
+                      if(config.title_links) { document.getElementById('title-links').innerText = config.title_links; document.getElementById('nav-links').innerText = config.title_links; }
                   }
               }
               renderData();
@@ -141,7 +155,7 @@
               for (const file of files) {
                   if (file.name.endsWith('.md')) {
                       const res = await fetch(file.download_url + cacheBuster);
-                      const text = await res.text();
+                      const text = decodeBase64ToUTF8(btoa(unescape(encodeURIComponent(await res.text())))); 
                       const config = universalParseYAML(text);
                       if(config) items.push(config);
                   }
@@ -153,10 +167,8 @@
       async function renderData() {
           const projects = await fetchCMSData('projects');
           const pList = document.getElementById('project-list');
-          pList.innerHTML = projects.length > 0 ? '' : '<p style="color:#64748b">Chưa có dự án.</p>';
-          projects.forEach(p => {
-              pList.innerHTML += `<div class="project-card"><img src="${cleanPath(p.image)}"><div class="project-overlay"><h3>${p.title}</h3><p>${p.description || ''}</p></div></div>`;
-          });
+          pList.innerHTML = projects.length > 0 ? '' : '<p style="color:#64748b">Chưa có dữ liệu.</p>';
+          projects.forEach(p => { pList.innerHTML += `<div class="project-card"><img src="${cleanPath(p.image)}"><div class="project-overlay"><h3>${p.title}</h3><p>${p.description || ''}</p></div></div>`; });
 
           const research = await fetchCMSData('research');
           const myRes = document.getElementById('my-research'), otherRes = document.getElementById('other-research');
@@ -166,9 +178,17 @@
               if (r.category === 'Nghiên cứu của tôi') myRes.innerHTML += html; else otherRes.innerHTML += html;
           });
 
+          const ideas = await fetchCMSData('ideas');
+          const iList = document.getElementById('ideas-list');
+          iList.innerHTML = ideas.length > 0 ? '' : '<p style="color:#64748b">Chưa có dữ liệu.</p>';
+          ideas.forEach(i => { 
+              let imgHtml = i.image ? `<img src="${cleanPath(i.image)}">` : `<div style="width:100%; height:100%; background:#334155;"></div>`;
+              iList.innerHTML += `<div class="project-card">${imgHtml}<div class="project-overlay"><h3>${i.title}</h3><p>${i.description || ''}</p></div></div>`; 
+          });
+
           const links = await fetchCMSData('links');
           const linkGrid = document.getElementById('external-links');
-          linkGrid.innerHTML = links.length > 0 ? '' : '<p style="color:#64748b">Chưa có liên kết.</p>';
+          linkGrid.innerHTML = links.length > 0 ? '' : '<p style="color:#64748b">Chưa có dữ liệu.</p>';
           links.forEach(l => { linkGrid.innerHTML += `<a href="${l.url}" target="_blank" class="link-item">${l.title}</a>`; });
       }
 
