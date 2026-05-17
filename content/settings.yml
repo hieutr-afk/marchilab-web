@@ -1,5 +1,5 @@
-hero_title: slogan test
-hero_subtitle: giới thiệu test
-hero_bg: images/namdu1.jpg
-accent_color: "#808000"
-bg_color: "#ffffff"
+hero_title: "Không Gian Sáng Tạo <br><span>Marchi Lab</span>"
+hero_subtitle: "Nơi hiện thực hóa những ý tưởng thiết kế độc đáo, kết hợp giữa nghệ thuật không gian và tư duy đổi mới."
+hero_bg: "images/hero-bg.jpg"
+accent_color: "#38bdf8"
+bg_color: "#0f172a"
