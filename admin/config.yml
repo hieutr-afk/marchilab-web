@@ -1,0 +1,38 @@
+backend:
+  name: git-gateway
+  branch: main
+
+media_folder: "images"
+public_folder: "images"
+
+collections:
+  - name: "projects"
+    label: "Dự Án Của Tôi"
+    folder: "content/projects"
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - {label: "Tên Dự Án", name: "title", widget: "string"}
+      - {label: "Ảnh Đại Diện", name: "image", widget: "image"}
+      - {label: "Mô Tả Ngắn", name: "description", widget: "text"}
+
+  - name: "research"
+    label: "Đề Tài Nghiên Cứu"
+    folder: "content/research"
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - {label: "Tên Bài Nghiên Cứu", name: "title", widget: "string"}
+      - {label: "Loại Đề Tài", name: "category", widget: "select", options: ["Nghiên cứu của tôi", "Đề tài sưu tầm hay"]}
+      - {label: "Ảnh Bìa", name: "thumbnail", widget: "image"}
+      - {label: "Tóm Tắt (Abstract)", name: "summary", widget: "text"}
+      - {label: "File Tài Liệu (PDF)", name: "file", widget: "file"}
+
+  - name: "links"
+    label: "Liên Kết Ngoài (ArchDaily v.v.)"
+    folder: "content/links"
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - {label: "Tên Trang Web", name: "title", widget: "string"}
+      - {label: "Đường Dẫn URL", name: "url", widget: "string"}
