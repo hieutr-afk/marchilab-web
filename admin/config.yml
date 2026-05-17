@@ -8,7 +8,7 @@ public_folder: "images"
 collections:
   - name: "settings"
     label: "Cài Đặt Giao Diện"
-    delete: false # Không cho phép xóa file cấu hình này
+    delete: false
     editor:
       preview: false
     files:
@@ -16,14 +16,19 @@ collections:
         label: "Cài đặt chung"
         file: "content/settings.yml"
         fields:
-          - {label: "Slogan Chính", name: "hero_title", widget: "string"}
-          - {label: "Đoạn Giới Thiệu Ngắn", name: "hero_subtitle", widget: "text"}
-          - {label: "Ảnh Nền Hero (Chạy dưới chữ)", name: "hero_bg", widget: "image"}
-          - {label: "Màu Chủ Đạo (Dạng mã # ví dụ #38bdf8)", name: "accent_color", widget: "string"}
-          - {label: "Màu Nền Trang Web (Dạng mã # ví dụ #0f172a)", name: "bg_color", widget: "string"}
+          - {label: "Slogan Chính", name: "hero_title", widget: "string", required: false}
+          - {label: "Đoạn Giới Thiệu Ngắn", name: "hero_subtitle", widget: "text", required: false}
+          - {label: "Ảnh Nền Hero", name: "hero_bg", widget: "image", required: false}
+          - {label: "Màu Chủ Đạo (VD: #38bdf8)", name: "accent_color", widget: "string", required: false}
+          - {label: "Màu Nền Trang (VD: #0f172a)", name: "bg_color", widget: "string", required: false}
+          - {label: "--- ĐỔI TÊN CÁC ĐẦU MỤC ---", name: "divider", widget: "hidden", required: false}
+          - {label: "Tên mục Dự Án", name: "title_projects", widget: "string", default: "Dự Án Của Tôi", required: false}
+          - {label: "Tên mục Nghiên Cứu", name: "title_research", widget: "string", default: "Đề Tài Nghiên Cứu", required: false}
+          - {label: "Tên mục Ý Tưởng", name: "title_ideas", widget: "string", default: "Góc Ý Tưởng", required: false}
+          - {label: "Tên mục Liên Kết", name: "title_links", widget: "string", default: "Xuất Bản & Liên Kết Ngoài", required: false}
 
   - name: "projects"
-    label: "Dự Án Của Tôi"
+    label: "Mục 1: Dự Án"
     folder: "content/projects"
     create: true
     slug: "{{slug}}"
@@ -33,7 +38,7 @@ collections:
       - {label: "Mô Tả Ngắn", name: "description", widget: "text"}
 
   - name: "research"
-    label: "Đề Tài Nghiên Cứu"
+    label: "Mục 2: Nghiên Cứu"
     folder: "content/research"
     create: true
     slug: "{{slug}}"
@@ -44,8 +49,18 @@ collections:
       - {label: "Tóm Tắt (Abstract)", name: "summary", widget: "text"}
       - {label: "File Tài Liệu (PDF)", name: "file", widget: "file"}
 
+  - name: "ideas"
+    label: "Mục 3: Ý Tưởng (Mới)"
+    folder: "content/ideas"
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - {label: "Tên Ý Tưởng", name: "title", widget: "string"}
+      - {label: "Ảnh Minh Họa", name: "image", widget: "image", required: false}
+      - {label: "Nội Dung Chi Tiết", name: "description", widget: "text"}
+
   - name: "links"
-    label: "Liên Kết Ngoài (ArchDaily v.v.)"
+    label: "Mục 4: Liên Kết"
     folder: "content/links"
     create: true
     slug: "{{slug}}"
