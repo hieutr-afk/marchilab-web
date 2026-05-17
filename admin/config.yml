@@ -72,4 +72,11 @@ collections:
       - {label: "Ảnh Minh Họa", name: "image", widget: "image", required: false}
       - {label: "Nội Dung Chi Tiết", name: "description", widget: "text"}
 
-  - name: "links
+  - name: "links"
+    label: "Mục 5: Liên Kết"
+    folder: "content/links"
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - {label: "Tên Trang Web", name: "title", widget: "string"}
+      - {label: "Đường Dẫn URL", name: "url", widget: "string"}
