@@ -71,10 +71,19 @@
     <script>
       const GITHUB_REPO = "hieutr-afk/marchilab-web"; 
 
-      // Bộ lọc vạn năng bóc tách cấu trúc dữ liệu YAML tự động
+      // Ép giải mã chuỗi nhị phân (Base64) từ GitHub sang đúng chuẩn chữ UTF-8 của Việt Nam
+      function decodeBase64ToUTF8(base64Str) {
+          const binaryStr = atob(base64Str.replace(/\s/g, ''));
+          const len = binaryStr.length;
+          const bytes = new Uint8Array(len);
+          for (let i = 0; i < len; i++) {
+              bytes[i] = binaryStr.charCodeAt(i);
+          }
+          return new TextDecoder('utf-8').decode(bytes);
+      }
+
       function universalParseYAML(text) {
           if (!text) return null;
-          // Thử bóc tách nếu CMS chèn dấu gạch ngang ---
           let cleanText = text;
           if (text.includes('---')) {
               const parts = text.split('---');
@@ -83,14 +92,11 @@
           try {
               return jsyaml.load(cleanText);
           } catch (e) {
-              // Phương án dự phòng thủ công bằng Regex nếu thư viện jsyaml bị lỗi cú pháp ký tự lạ
               const obj = {};
               const lines = cleanText.split('\n');
               lines.forEach(line => {
                   const match = line.match(/^([^:]+):\s*["']?([^"']+)["']?\s*$/);
-                  if (match) {
-                      obj[match[1].trim()] = match[2].trim();
-                  }
+                  if (match) obj[match[1].trim()] = match[2].trim();
               });
               return Object.keys(obj).length > 0 ? obj : null;
           }
@@ -107,7 +113,8 @@
               const resSettings = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/content/settings.yml${cacheBuster}`);
               if(resSettings.ok) {
                   const dataSettings = await resSettings.json();
-                  const rawText = atob(dataSettings.content);
+                  // SỬA LỖI: Gọi hàm giải mã UTF-8 chuyên dụng thay vì dùng atob mặc định
+                  const rawText = decodeBase64ToUTF8(dataSettings.content);
                   const config = universalParseYAML(rawText);
                   
                   if(config) {
