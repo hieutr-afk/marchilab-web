@@ -71,13 +71,29 @@
     <script>
       const GITHUB_REPO = "hieutr-afk/marchilab-web"; 
 
-      // Hàm giải mã nội dung Markdown cho các bài viết riêng lẻ
-      function parseFrontmatter(text) {
-          const lines = text.split('---');
-          if (lines.length > 2) {
-              try { return jsyaml.load(lines[1]); } catch (e) { return null; }
+      // Bộ lọc vạn năng bóc tách cấu trúc dữ liệu YAML tự động
+      function universalParseYAML(text) {
+          if (!text) return null;
+          // Thử bóc tách nếu CMS chèn dấu gạch ngang ---
+          let cleanText = text;
+          if (text.includes('---')) {
+              const parts = text.split('---');
+              cleanText = parts.length > 2 ? parts[1] : parts[0];
           }
-          return null;
+          try {
+              return jsyaml.load(cleanText);
+          } catch (e) {
+              // Phương án dự phòng thủ công bằng Regex nếu thư viện jsyaml bị lỗi cú pháp ký tự lạ
+              const obj = {};
+              const lines = cleanText.split('\n');
+              lines.forEach(line => {
+                  const match = line.match(/^([^:]+):\s*["']?([^"']+)["']?\s*$/);
+                  if (match) {
+                      obj[match[1].trim()] = match[2].trim();
+                  }
+              });
+              return Object.keys(obj).length > 0 ? obj : null;
+          }
       }
 
       function cleanPath(p) {
@@ -88,13 +104,11 @@
       async function initSite() {
           try {
               const cacheBuster = `?t=${new Date().getTime()}`;
-              // ĐỌC TRỰC TIẾP FILE settings.yml do Admin của bạn sinh ra
               const resSettings = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/content/settings.yml${cacheBuster}`);
               if(resSettings.ok) {
                   const dataSettings = await resSettings.json();
                   const rawText = atob(dataSettings.content);
-                  // Chuyển trực tiếp chuỗi YAML thành Object dữ liệu
-                  const config = jsyaml.load(rawText);
+                  const config = universalParseYAML(rawText);
                   
                   if(config) {
                       if(config.hero_title) document.getElementById('hero-title').innerHTML = config.hero_title;
@@ -121,7 +135,7 @@
                   if (file.name.endsWith('.md')) {
                       const res = await fetch(file.download_url + cacheBuster);
                       const text = await res.text();
-                      const config = parseFrontmatter(text);
+                      const config = universalParseYAML(text);
                       if(config) items.push(config);
                   }
               }
